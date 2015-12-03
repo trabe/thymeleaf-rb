@@ -5,3 +5,6 @@ rvm:
 notifications:
   slack:
     secure: csMsF1LyJ6jw7Ix5ixPN/p5BYWE/ZDRcd+7qIUhuHAiD20ookukm6W4xfz/NzkrKXEY8Z/6gM0JM08aZJTF4VUfeUNn4pw9/EUDLi04r+wQRtyCNWRn1vxCVKDD1HTfieuYS8jF/+9nWUyTO2/k6AXVYUKMHrd+JONrYIZWLMOw=
+
+sudo: false
+cache: bundler
