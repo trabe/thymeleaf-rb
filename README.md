@@ -1,5 +1,8 @@
 # Thymeleaf.rb
 
+[![Build Status](https://travis-ci.org/trabe/thymeleaf-rb.svg)](https://travis-ci.org/trabe/thymeleaf-rb)
+
+
 Thymeleaf.rb is a ruby implementation of [Thymeleaf](http://www.thymeleaf.org), a Java
 natural templating engine.
 
