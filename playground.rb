@@ -1,6 +1,16 @@
 require 'nokogiri'
 require 'awesome_print'
 
+module Logger
+  module_function def debug(stage, *args)
+    ap stage
+    ap args unless args.empty?
+  end
+end
+
+
+
+
 module Thymeleaf
 
   class << self
@@ -11,7 +21,6 @@ module Thymeleaf
     self.configuration ||= Configuration.new
     yield configuration
   end
-
 
 
   class Configuration
@@ -102,33 +111,61 @@ module Thymeleaf
   end
 
 
+
+
   class TemplateProcessor
     def call(parsed_template, context_holder)
-      process_node(parsed_template.root)
+      process_node(context_holder, parsed_template.root)
       parsed_template
     end
 
   private
 
-    def process_node(node)
-      process_attributes(node)
-      node.children.each {|child| process_node(child)}
+    def process_node(context_holder, node)
+      #Logger.debug :process_node, node, context_holder
+      process_attributes(context_holder, node)
+      node.children.each {|child| process_node(context_holder, child)}
     end
 
-    def process_attributes(node)
+    def process_attributes(context_holder, node)
       node.attributes.each do |attribute_key, attribute|
+        process_attribute(context_holder, node, attribute_key, attribute)
+      end
+    end
+
+    def process_attribute(context_holder, node, attribute_key, attribute)
+        #Logger.debug :process_attribute, node, attribute_key, attribute, context_holder
         # TODO: Find all proccessors. Apply in precedence order!
         key, processor = * Thymeleaf.configuration.dialects.find_processor(attribute_key)
-        ap [key, processor]
-        processor.call(key: key, node: node, attribute: attribute)
-      end
+        processor.call(key: key, node: node, attribute: attribute, context: context_holder)
     end
   end
 
 
 
+  class ContextHolder < Struct.new(:context, :parent_context)
 
-  class ContextHolder < Struct.new(:context)
+    def initialize(context, parent_context = nil)
+      super(context, parent_context)
+    end
+
+    def evaluate(expr)
+      instance_eval(expr)
+    end
+
+    def method_missing(m, *args)
+      context_value = if context.is_a?(Hash)
+        context[m] || context[m.to_s] 
+      elsif context.respond_to?(m)
+        context.send(m, *args)
+      end
+
+      if context_value.nil? && !parent_context.nil?
+          context_value =  parent_context.send(m, *args)
+      end
+
+      context_value
+    end
   end
 
 
@@ -141,6 +178,46 @@ module Thymeleaf
     end
   end
 
+  module Processor
+
+    class ExpressionParser
+      def initialize(context)
+        self.context = context
+      end
+
+      def parse(expr)
+        expr.gsub(/(\${.+?})/) do |match|
+          ContextEvaluator.new(context).evaluate(match[2..-2])
+        end
+      end
+
+    private
+      attr_accessor :context
+    end
+
+    class ContextEvaluator
+      def initialize(context)
+        self.context = context
+      end
+
+      def evaluate(expr)
+        context.evaluate(expr)
+      end
+
+    private
+      attr_accessor :context
+    end
+
+
+    def parse_expression(context, expr)
+      ExpressionParser.new(context).parse(expr)
+    end
+
+    def evaluate_in_context(context, expr)
+      ContextEvaluator.new(context).evaluate(expr)
+    end
+  end
+
 
   class DefaultDialect
 
@@ -148,34 +225,66 @@ module Thymeleaf
       'th'
     end
 
+    # Precedence based on order for the time being
     def processors
       {
-        text: TextProcessor,
         each: EachProcessor,
+        text: TextProcessor,
         default: DefaultProcessor
       }
     end
 
     class DefaultProcessor
-      def call(key:, node:, attribute:)
-        ap ["default", key, node, attribute]
-        node[key] = [node[key], attribute.value].compact.join(' ')
+      include Thymeleaf::Processor
+
+      def call(key:, node:, attribute:, context:)
+        Logger.debug :default_processor, key, node, attribute, context
+        node[key] = [node[key], parse_expression(context, attribute.value)].compact.join(' ')
         attribute.unlink
       end
     end
 
     class TextProcessor
-      def call(node:, attribute:, **opts)
-        node.content = attribute.value
+      include Thymeleaf::Processor
+
+      def call(node:, attribute:, context:, **opts)
+        Logger.debug :text_processor, node, attribute, context
+        node.content = parse_expression(context, attribute.value)
         attribute.unlink
       end
     end
 
     class EachProcessor
-      def call(attribute:, **opts)
-        ap ["each"]
+      include Thymeleaf::Processor
+
+      def call(node:, attribute:, context:, **opts)
+        Logger.debug :each_processor, node, attribute, context
+        variable, enumerable = parse_each_expr(context, attribute.value)
+
+        # This is shit!
+        subproccesor = Thymeleaf::TemplateProcessor.new
+
         attribute.unlink
+
+        evaluate_in_context(context,enumerable).each do |element|
+          subcontext = ContextHolder.new({variable => ContextHolder.new(element, context)}, context)
+          new_node = node.dup
+          subproccesor.send(:process_node, subcontext, new_node)
+          node.add_next_sibling(new_node)
+        end
+
+        node.children.each {|child| child.unlink }
+        node.unlink
       end
+
+    private
+
+      def parse_each_expr(context, expr)
+        md = expr.match(/\s*(.+?)\s*:\s*\${(.+?)}/)
+        raise ArgumentError, "Not a valid each expression" if md.nil?
+        md[1..2]
+      end
+
     end
   end
 end
@@ -195,14 +304,24 @@ test_template = <<-TH
   <tbody>
     <span data-cache-fetch="cache_key">
     <tr data-th-each="product : ${products}">
-      <td data-th-text="${product.name}" data-th-class="fair" class="label">Oranges</td>
+      <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
       <td data-th-text="${product.price}" data-th-class="value">0.99</td>
+      <td>
+        <!--<span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span> -->
+      </td>
     </tr>
   </tbody>
 </html>
 TH
 
 test_context = {
+  a: 'class_name1',
+  'b' => 'class_name2',
+  title: 'The page title oh my god!',
+  products: [
+    { name: "p1", price: 0.5, categories: ['cat1', 'cat2'] },
+    { name: "p2", price: 0.6, categories: [] }
+  ]
 }
 
 class RailsCacheDialect
@@ -219,7 +338,6 @@ class RailsCacheDialect
 
   class FetchProccessor
     def call(node:, attribute:, **opts)
-      ap ["text-processor", node, attribute]
     end
   end
 end
@@ -229,5 +347,12 @@ Thymeleaf.configure do |configuration|
   configuration.add_dialect 'cache', RailsCacheDialect
 end
 
-ap Thymeleaf.configuration.dialects
+# ch = Thymeleaf::ContextHolder.new(test_context)
+# ap ch.a
+# ap ch.b
+# ap ch.title
+# ap Thymeleaf::ContextHolder.new({product: Thymeleaf::ContextHolder.new(ch.products.first, ch)}, ch).product.name
+# ap Thymeleaf::ContextHolder.new({product: Thymeleaf::ContextHolder.new(ch.products.first, ch)}, ch).a
+# ap Thymeleaf::ContextHolder.new({category: Thymeleaf::ContextHolder.new(ch.products.first, ch).categories.first}, ch).category
+
 ap Thymeleaf::Template.new(test_template, test_context).render
