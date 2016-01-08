@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'awesome_print'
+require 'ostruct'
 
 module Logger
   module_function def debug(stage, *args)
@@ -122,7 +123,6 @@ module Thymeleaf
   private
 
     def process_node(context_holder, node)
-      #Logger.debug :process_node, node, context_holder
       process_attributes(context_holder, node)
       node.children.each {|child| process_node(context_holder, child)}
     end
@@ -134,7 +134,6 @@ module Thymeleaf
     end
 
     def process_attribute(context_holder, node, attribute_key, attribute)
-        #Logger.debug :process_attribute, node, attribute_key, attribute, context_holder
         # TODO: Find all proccessors. Apply in precedence order!
         key, processor = * Thymeleaf.configuration.dialects.find_processor(attribute_key)
         processor.call(key: key, node: node, attribute: attribute, context: context_holder)
@@ -146,7 +145,11 @@ module Thymeleaf
   class ContextHolder < Struct.new(:context, :parent_context)
 
     def initialize(context, parent_context = nil)
-      super(context, parent_context)
+      if context.is_a? Hash
+        super(OpenStruct.new(context), parent_context)
+      else
+        super(context, parent_context)
+      end
     end
 
     def evaluate(expr)
@@ -154,17 +157,11 @@ module Thymeleaf
     end
 
     def method_missing(m, *args)
-      context_value = if context.is_a?(Hash)
-        context[m] || context[m.to_s] 
-      elsif context.respond_to?(m)
+      if context.respond_to? m
         context.send(m, *args)
+      elsif !parent_context.nil?
+        parent_context.send(m, *args)
       end
-
-      if context_value.nil? && !parent_context.nil?
-          context_value =  parent_context.send(m, *args)
-      end
-
-      context_value
     end
   end
 
@@ -228,6 +225,8 @@ module Thymeleaf
     # Precedence based on order for the time being
     def processors
       {
+        if: IfProcessor,
+        unless: UnlessProcessor,
         each: EachProcessor,
         text: TextProcessor,
         default: DefaultProcessor
@@ -238,7 +237,6 @@ module Thymeleaf
       include Thymeleaf::Processor
 
       def call(key:, node:, attribute:, context:)
-        Logger.debug :default_processor, key, node, attribute, context
         node[key] = [node[key], parse_expression(context, attribute.value)].compact.join(' ')
         attribute.unlink
       end
@@ -248,9 +246,30 @@ module Thymeleaf
       include Thymeleaf::Processor
 
       def call(node:, attribute:, context:, **opts)
-        Logger.debug :text_processor, node, attribute, context
         node.content = parse_expression(context, attribute.value)
         attribute.unlink
+      end
+    end
+
+    class IfProcessor
+      include Thymeleaf::Processor
+      def call(node:, attribute:, context:, **opts)
+        attribute.unlink
+        unless parse_expression(context, attribute.value)
+          node.unlink
+        end
+      end
+    end
+
+    class UnlessProcessor
+      include Thymeleaf::Processor
+
+      def call(node:, attribute:, context:, **opts)
+        attribute.unlink
+        if parse_expression(context, attribute.value)
+          node.children.each {|child| child.unlink }
+          node.unlink
+        end
       end
     end
 
@@ -258,7 +277,6 @@ module Thymeleaf
       include Thymeleaf::Processor
 
       def call(node:, attribute:, context:, **opts)
-        Logger.debug :each_processor, node, attribute, context
         variable, enumerable = parse_each_expr(context, attribute.value)
 
         # This is shit!
@@ -267,7 +285,7 @@ module Thymeleaf
         attribute.unlink
 
         evaluate_in_context(context,enumerable).each do |element|
-          subcontext = ContextHolder.new({variable => ContextHolder.new(element, context)}, context)
+          subcontext = ContextHolder.new({variable => element}, context)
           new_node = node.dup
           subproccesor.send(:process_node, subcontext, new_node)
           node.add_next_sibling(new_node)
@@ -303,11 +321,13 @@ test_template = <<-TH
 
   <tbody>
     <span data-cache-fetch="cache_key">
+    <div data-th-if="${truthy}">Shown</div>
+    <div data-th-unless="${truthy}">Not shown <span data-th-text="Cona">Child</span></div>
     <tr data-th-each="product : ${products}">
       <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
       <td data-th-text="${product.price}" data-th-class="value">0.99</td>
       <td>
-        <!--<span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span> -->
+        <span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span>
       </td>
     </tr>
   </tbody>
@@ -317,10 +337,11 @@ TH
 test_context = {
   a: 'class_name1',
   'b' => 'class_name2',
+  truthy: true,
   title: 'The page title oh my god!',
   products: [
-    { name: "p1", price: 0.5, categories: ['cat1', 'cat2'] },
-    { name: "p2", price: 0.6, categories: [] }
+    OpenStruct.new({ name: "p1", price: 0.5, categories: ['cat1', 'cat2'] }),
+    OpenStruct.new({ name: "p2", price: 0.6, categories: [] })
   ]
 }
 
@@ -338,6 +359,7 @@ class RailsCacheDialect
 
   class FetchProccessor
     def call(node:, attribute:, **opts)
+      attribute.unlink
     end
   end
 end
@@ -351,8 +373,11 @@ end
 # ap ch.a
 # ap ch.b
 # ap ch.title
-# ap Thymeleaf::ContextHolder.new({product: Thymeleaf::ContextHolder.new(ch.products.first, ch)}, ch).product.name
-# ap Thymeleaf::ContextHolder.new({product: Thymeleaf::ContextHolder.new(ch.products.first, ch)}, ch).a
-# ap Thymeleaf::ContextHolder.new({category: Thymeleaf::ContextHolder.new(ch.products.first, ch).categories.first}, ch).category
+# product = ch.products.first
+# ap Thymeleaf::ContextHolder.new({product: product}, ch).product.name
+# ap Thymeleaf::ContextHolder.new({product: product}, ch).a
+# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).category
+# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).product.name
+# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).a
 
 ap Thymeleaf::Template.new(test_template, test_context).render
