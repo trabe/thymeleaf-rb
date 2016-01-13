@@ -1,6 +1,10 @@
 require 'nokogiri'
+require 'nokogiri/diff'
 require 'awesome_print'
 require 'ostruct'
+require 'erb'
+require 'benchmark/ips'
+require 'memory_profiler'
 
 module Logger
   module_function def debug(stage, *args)
@@ -28,7 +32,7 @@ module Thymeleaf
 
     attr_accessor :dialects
 
-    def initialize
+  def initialize
       self.dialects = Dialects.new
       add_dialect DefaultDialect
     end
@@ -206,7 +210,7 @@ module Thymeleaf
     end
 
 
-    def parse_expression(context, expr)
+  def parse_expression(context, expr)
       ExpressionParser.new(context).parse(expr)
     end
 
@@ -255,7 +259,7 @@ module Thymeleaf
       include Thymeleaf::Processor
       def call(node:, attribute:, context:, **opts)
         attribute.unlink
-        unless parse_expression(context, attribute.value)
+      unless parse_expression(context, attribute.value)
           node.unlink
         end
       end
@@ -284,7 +288,7 @@ module Thymeleaf
 
         attribute.unlink
 
-        evaluate_in_context(context,enumerable).each do |element|
+        evaluate_in_context(context,enumerable).reverse.each do |element|
           subcontext = ContextHolder.new({variable => element}, context)
           new_node = node.dup
           subproccesor.send(:process_node, subcontext, new_node)
@@ -318,24 +322,82 @@ test_template = <<-TH
     <title data-th-text="${title}">Title placeholder</title>
     <meta charset=UTF-8" />
   </head>
-
-  <tbody>
-    <span data-cache-fetch="cache_key">
+  <body>
+    <div data-cache-fetch="cache_key">Cached</div>
     <div data-th-if="${truthy}">Shown</div>
-    <div data-th-unless="${truthy}">Not shown <span data-th-text="Cona">Child</span></div>
-    <tr data-th-each="product : ${products}">
-      <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
-      <td data-th-text="${product.price}" data-th-class="value">0.99</td>
-      <td>
-        <span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span>
-      </td>
-    </tr>
-  </tbody>
+    <div data-th-unless="${truthy}">Not shown <span data-th-text="Cosa">Child</span></div>
+    <tbody>
+      <tr data-th-each="product : ${products}">
+        <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
+        <td data-th-text="${product.price}" data-th-class="value">0.99</td>
+        <td>
+          <span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span>
+        </td>
+      </tr>
+    </tbody>
+</body>
 </html>
 TH
 
+expected_result = <<-RESULT
+<!DOCCTYPE html>
+<html>
+  <head>
+    <title>The page title oh my god!</title>
+    <meta charset=UTF-8" />
+  </head>
+  <body>
+    <div>Cached</div>
+    <div>Shown</div>
+    <tbody>
+      <tr>
+        <td class="fair CLASS_NAME1 expr class_name2">p1</td>
+        <td class="value">0.5</td>
+        <td>
+          <span>cat1</span> <span>cat2</span>
+        </td>
+      </tr>
+      <tr>
+      <td class="fair CLASS_NAME1 expr class_name2">p2</td>
+        <td class="value">0.6/td>
+        <td>
+
+        </td>
+      </tr>
+  </tbody>
+</body>
+</html>
+RESULT
+
+erb_template = <<-ERB
+<!DOCCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <meta charset=UTF-8" />
+  </head>
+  <body>
+    <div>Cached</div>
+    <% if truthy %><div>Shown</div><% end %>
+    <% unless truthy %><div>Not shown <span><%= 'Cosa' %></span></div><% end %>
+    <tbody>
+  <% products.each do |product| %>
+        <tr>
+          <td class="label fair <%= a.upcase %> expr <%= b %>"><%= product.name %></td>
+          <td class="<%= 'value' %>"><%= product.price %></td>
+          <td>
+          <% product.categories.each do |category| %><span><%= category %></span> <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </body>
+</html>
+ERB
+
+
 test_context = {
-  a: 'class_name1',
+a: 'class_name1',
   'b' => 'class_name2',
   truthy: true,
   title: 'The page title oh my god!',
@@ -369,15 +431,77 @@ Thymeleaf.configure do |configuration|
   configuration.add_dialect 'cache', RailsCacheDialect
 end
 
-# ch = Thymeleaf::ContextHolder.new(test_context)
-# ap ch.a
-# ap ch.b
-# ap ch.title
-# product = ch.products.first
-# ap Thymeleaf::ContextHolder.new({product: product}, ch).product.name
-# ap Thymeleaf::ContextHolder.new({product: product}, ch).a
-# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).category
-# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).product.name
-# ap Thymeleaf::ContextHolder.new({category: product.categories.first},ch).a
 
-ap Thymeleaf::Template.new(test_template, test_context).render
+rendered_by_thymeleaf = Thymeleaf::Template.new(test_template, test_context).render
+
+test_binding = OpenStruct.new(test_context).instance_eval { binding } 
+
+rendered_by_erb = ERB.new(erb_template).result(test_binding)
+
+dom1 = Nokogiri::HTML(rendered_by_thymeleaf.to_s)
+dom2 = Nokogiri::HTML(rendered_by_erb)
+dom3 = Nokogiri::HTML(expected_result)
+
+ap "[TH] -------------------------------"
+ap dom1
+ap "[ERB] ------------------------------"
+ap dom2
+
+ap "[TEST] -----------------------------"
+ap "TH vs ERB: #{dom1.diff(dom2).count} Changes"
+ap "TH vs EXPECTED: #{dom1.diff(dom3).count} Changes"
+
+class GCSuite
+  def warming(*)
+    run_gc
+  end
+
+  def running(*)
+    run_gc
+  end
+
+  def warmup_stats(*)
+  end
+
+  def add_report(*)
+  end
+
+private
+
+  def run_gc
+    GC.enable
+    GC.start
+    GC.disable
+  end
+end
+
+suite = GCSuite.new
+
+ap "[PERF] -----------------------------"
+
+# Pit Th against other template solutions. Also compare speed/memory performance against a baseline
+
+Benchmark.ips do |b|
+  b.config(suite: suite, time: 2, warmup: 1)
+  b.report("thymeleaf.rb") { Thymeleaf::Template.new(test_template, test_context).render }
+  b.report("ERB")          { ERB.new(erb_template).result(test_binding) }
+  b.compare!
+end
+
+ap "[MEM] ------------------------------"
+mem_report = MemoryProfiler.report { Thymeleaf::Template.new(test_template, test_context).render }
+
+[
+  "Total allocated",
+  mem_report.total_allocated,
+  "Total allocated_memory_by_gem",
+  mem_report.allocated_memory_by_gem,
+  "Total allocated_objects_by_gem",
+  mem_report.allocated_objects_by_gem,
+  "Total allocated_memory_by_file",
+  mem_report.allocated_memory_by_file,
+  "Total allocated_objects_by_file",
+  mem_report.allocated_objects_by_file
+].each {|thing| ap thing }
+
+
