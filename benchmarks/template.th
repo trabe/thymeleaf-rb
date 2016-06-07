@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title data-th-text="${title}">Title placeholder</title>
+    <meta charset=UTF-8" />
+</head>
+
+<body>
+<div data-cache-fetch="cache_key">Cached</div>
+<div data-th-if="${truthy}">Shown</div>
+<div data-th-unless="${truthy}">Not shown <span data-th-text="Cosa">Child</span></div>
+
+<table>
+    <tr data-th-each="product : ${products}">
+        <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
+        <td data-th-text="${product.price}" data-th-class="value">0.99</td>
+        <td>
+            <span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

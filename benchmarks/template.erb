@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title><%= title %></title>
+  <meta charset=UTF-8" />
+</head>
+
+<body>
+<div>Cached</div>
+<% if truthy %><div>Shown</div><% end %>
+<% unless truthy %><div>Not shown <span><%= 'Cosa' %></span></div><% end %>
+
+<table>
+<% products.each do |product| %>
+    <tr>
+      <td class="label fair <%= a.upcase %> expr <%= b %>"><%= product.name %></td>
+      <td class="<%= 'value' %>"><%= product.price %></td>
+      <td>
+        <% product.categories.each do |category| %><span><%= category %></span> <% end %>
+      </td>
+    </tr>
+<% end %>
+</table>
+</body>
+</html>
