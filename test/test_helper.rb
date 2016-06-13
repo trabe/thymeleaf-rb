@@ -7,6 +7,11 @@ require 'minitest/spec'
 class TestThymeleaf < Minitest::Test
   def setup
     @aux = Aux.new
+
+    Thymeleaf.configure do |configuration|
+      configuration.add_dialect 'cache', RailsCacheDialect
+    end
+
   end
 
   def render(source, context = {})
@@ -14,7 +19,11 @@ class TestThymeleaf < Minitest::Test
   end
 
   def assert_html(expected, source, context = {})
-    assert_equal expected, render(source, context)
+    assert_equal expected, render(source, context).to_s
+  end
+
+  def assert_html_page(expected, source, context = {})
+    assert_equal render(expected, {}).to_s, render(source, context).to_s
   end
 
   def assert_syntax_error(message, source, context = {})
@@ -50,4 +59,22 @@ class Aux
     HTML
   end
 
+end
+
+class RailsCacheDialect
+  def default_key
+    'rails-cache'
+  end
+
+  def processors
+    {
+        fetch: FetchProccessor
+    }
+  end
+
+  class FetchProccessor
+    def call(node:, attribute:, **opts)
+      attribute.unlink
+    end
+  end
 end
