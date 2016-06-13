@@ -1,0 +1,13 @@
+---
+a: 'Hello world'
+b: 'A short description'
+---
+<article>
+    <h1 data-th-text="${a}">My title</h1>
+    <p data-th-text="${b}">My desc</p>
+</article>
+---
+<article>
+    <h1>Hello world</h1>
+    <p>A short description</p>
+</article>

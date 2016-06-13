@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test>
+    <context>
+        {
+            a: 'Hello world 2',
+            b: 'A short description'
+        }
+    </context>
+
+    <template>
+        <div>
+            <body><h1 data-th-text="${a}">My title</h1><p data-th-text="${b}">My desc</p></body>
+        </div>
+    </template>
+
+    <expected>
+        <div>
+            <body><h1>Hello world 2</h1><p>A short description</p></body>
+        </div>
+    </expected>
+</test>
