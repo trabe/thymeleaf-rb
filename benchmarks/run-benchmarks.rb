@@ -1,15 +1,13 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/thymeleaf'
-require_relative 'context'
 require 'erb'
 require 'benchmark/ips'
 require 'ostruct'
 require 'awesome_print'
-
-test_template = File.read(File.dirname(__FILE__) + '/template.th')
-erb_template = File.read(File.dirname(__FILE__) + '/template.erb')
-test_context = (Context.new).items
+require 'find'
+require 'yaml'
+require 'pathname'
 
 class RailsCacheDialect
 
@@ -34,8 +32,6 @@ end
 Thymeleaf.configure do |configuration|
   configuration.add_dialect 'cache', RailsCacheDialect
 end
-
-test_binding = OpenStruct.new(test_context).instance_eval { binding }
 
 
 class GCSuite
@@ -62,15 +58,56 @@ class GCSuite
   end
 end
 
-suite = GCSuite.new
 
 ap "[PERF] -----------------------------"
 
-# Pit Th against other template solutions. Also compare speed/memory performance against a baseline
+Find.find('.') do |path|
+  if path =~ /.*\.th.bench/
+    parts = File.open(path).read.split("---\n")
 
-Benchmark.ips do |b|
-  b.config(suite: suite, time: 2, warmup: 1)
-  b.report("thymeleaf.rb") { Thymeleaf::Template.new(test_template, test_context).render }
-  b.report("ERB")          { ERB.new(erb_template).result(test_binding) }
-  b.compare!
+    index = 0
+    index = 1 if parts.count > 3 && parts[0].empty?
+
+    bench_context = YAML.load(parts[index])
+    test_template = parts[index + 1]
+    erb_template = parts[index + 2]
+  else
+    next
+  end
+
+  new_bench_context = {}
+
+  # Convert hashes to OpenStructs (limited to 2 depth levels)
+  bench_context.each do |key, content|
+    if content.is_a? Hash
+      new_bench_context[key] = OpenStruct.new content
+    elsif content.is_a? Array
+      ncn = []
+      content.each do |cnt|
+        if cnt.is_a? Hash
+          ncn.push OpenStruct.new cnt
+        else
+          ncn.push cnt
+        end
+      end
+      new_bench_context[key] = ncn
+    else
+      new_bench_context[key] = content
+    end
+  end
+
+  bench_name = path.to_s.scan(/.([a-zA-Z0-9]+)\.th.bench$/)[0][0].to_s
+  test_binding = OpenStruct.new(new_bench_context).instance_eval { binding }
+  suite = GCSuite.new
+
+  ap "[Bench-#{bench_name}] -----------------------------"
+
+  # Pit Th against other template solutions. Also compare speed/memory performance against a baseline
+  Benchmark.ips do |b|
+    b.config(suite: suite, time: 2, warmup: 1)
+    b.report("thymeleaf.rb") { Thymeleaf::Template.new(test_template, new_bench_context).render }
+    b.report("ERB")          { ERB.new(erb_template).result(test_binding) }
+    b.compare!
+  end
+
 end
