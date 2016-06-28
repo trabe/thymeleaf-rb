@@ -224,7 +224,7 @@ module Thymeleaf
     class DefaultProcessor
       include Thymeleaf::Processor
 
-      def call(key:, node:, attribute:, context:)
+      def call(key:nil, node:nil, attribute:nil, context:nil)
         node[key] = [node[key], parse_expression(context, attribute.value)].compact.join(' ')
         attribute.unlink
       end
@@ -233,7 +233,7 @@ module Thymeleaf
     class TextProcessor
       include Thymeleaf::Processor
 
-      def call(node:, attribute:, context:, **opts)
+      def call(node:nil, attribute:nil, context:nil, **opts)
         node.content = parse_expression(context, attribute.value)
         attribute.unlink
       end
@@ -241,7 +241,7 @@ module Thymeleaf
 
     class IfProcessor
       include Thymeleaf::Processor
-      def call(node:, attribute:, context:, **opts)
+      def call(node:nil, attribute:nil, context:nil, **opts)
         attribute.unlink
         unless parse_expression(context, attribute.value)
           node.unlink
@@ -252,7 +252,7 @@ module Thymeleaf
     class UnlessProcessor
       include Thymeleaf::Processor
 
-      def call(node:, attribute:, context:, **opts)
+      def call(node:nil, attribute:nil, context:nil, **opts)
         attribute.unlink
         if parse_expression(context, attribute.value)
           node.children.each {|child| child.unlink }
@@ -264,7 +264,7 @@ module Thymeleaf
     class EachProcessor
       include Thymeleaf::Processor
 
-      def call(node:, attribute:, context:, **opts)
+      def call(node:nil, attribute:nil, context:nil, **opts)
         variable, enumerable = parse_each_expr(context, attribute.value)
 
         # This is shit!

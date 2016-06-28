@@ -4,7 +4,7 @@ require 'thymeleaf'
 require 'minitest/autorun'
 require 'minitest/spec'
 
-class TestThymeleaf < Minitest::Test
+class TestThymeleaf < MiniTest::Unit::TestCase
   def setup
     @aux = Aux.new
 
@@ -73,7 +73,7 @@ class RailsCacheDialect
   end
 
   class FetchProccessor
-    def call(node:, attribute:, **opts)
+    def call(node:nil, attribute:nil, **opts)
       attribute.unlink
     end
   end

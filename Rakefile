@@ -2,7 +2,7 @@ require "rake/testtask"
 
 desc 'Run Thymeleaf benchmarks!'
 task :bench do
-  ruby('benchmarks/run-benchmarks.rb')
+  system 'ruby benchmarks/run-benchmarks.rb'
 end
 
 Rake::TestTask.new(:test) do |t|

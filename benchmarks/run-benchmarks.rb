@@ -22,7 +22,7 @@ class RailsCacheDialect
   end
 
   class FetchProccessor
-    def call(node:, attribute:, **opts)
+    def call(node:nil, attribute:nil, **opts)
       attribute.unlink
     end
   end
