@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.email                 = ['contact@trabesoluciones.com', 'david.barral@trabesoluciones.com']
   spec.summary               = 'Thymeleaf for Ruby'
   spec.description           = 'Thymeleaf template engine for Ruby'
-  spec.homepage              = 'https://trabe.github.io/thymleaf-rb'
+  spec.homepage              = 'https://trabe.github.io/thymeleaf-rb'
   spec.license               = 'MIT'
 
   spec.files                 = Dir['*', 'lib/**/*.rb']
@@ -22,5 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'minitest'
+  spec.add_development_dependency 'nokogiri'
+  spec.add_development_dependency 'awesome_print'
+  spec.add_development_dependency 'benchmark/ips'
 end
 

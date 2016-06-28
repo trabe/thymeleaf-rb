@@ -20,14 +20,7 @@ end
 
 
 Find.find('.') do |path|
-  if path =~ /.*\.th.xml$/
-    doc = Nokogiri::XML(File.open(path))
-
-    context = eval(doc.xpath('//test//context').first.to_s.sub('<context>', '').sub('</context>', ''))
-    source = doc.xpath('//test//template//*').first.to_s
-    expected = doc.xpath('//test//expected//*').first.to_s
-
-  elsif path =~ /.*\.th.test$/
+  if path =~ /.*\.th.test$/
     parts = File.open(path).read.split("---\n")
 
     index = 0
