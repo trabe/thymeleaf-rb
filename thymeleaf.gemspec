@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.homepage              = 'https://trabe.github.io/thymeleaf-rb'
   spec.license               = 'MIT'
 
-  spec.files                 = Dir['*', 'lib/**/*.rb']
+  spec.files                 = Dir['thymeleaf.rb', 'lib/thymeleaf/**/*.rb']
   spec.require_paths         = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 1.10'
