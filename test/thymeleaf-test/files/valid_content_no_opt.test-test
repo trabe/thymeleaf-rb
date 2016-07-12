@@ -1,0 +1,7 @@
+3 * 2 * (5 - 1)
+---
+$thymeleaf$
+---
+$expected$
+---
+$erb$
