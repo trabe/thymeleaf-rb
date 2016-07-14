@@ -9,7 +9,7 @@ class ErbTestRunner
   end
 
   def self.context_binding(context)
-    OpenStruct.new(context).instance_eval { binding }
+    ContextStruct.new(context).instance_eval { binding }
   end
 
 end

@@ -1,0 +1,25 @@
+---
+{
+'a' => 'Hello world',
+'b' => 'A short description',
+'show' => true,
+'dont_show' => false
+}
+---
+<article>
+    <h1 data-th-if="${show}" data-th-text="${a}">My title</h1>
+    <p data-th-if="${dont_show}" data-th-text="${b}" class="mdc">My desc</p>
+    <p>Ahother description</p>
+</article>
+---
+<article>
+    <h1>Hello world</h1>
+    
+    <p>Ahother description</p>
+</article>
+---
+<article>
+    <% if show %><h1><%= a %></h1><% end %>
+    <% if dont_show %><p class="mdc"><%= b %></p><% end %>
+    <p>Ahother description</p>
+</article>
