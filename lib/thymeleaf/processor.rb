@@ -3,34 +3,8 @@ module Thymeleaf
 
   module Processor
 
-    class ExpressionParser
-      def initialize(context)
-        self.context = context
-      end
-
-      def parse(expr)
-        expr.gsub(/(\${.+?})/) do |match|
-          ContextEvaluator.new(context).evaluate(match[2..-2])
-        end
-      end
-
-      private
-      attr_accessor :context
-    end
-
-    class ContextEvaluator
-      def initialize(context)
-        self.context = context
-      end
-
-      def evaluate(expr)
-        context.evaluate(expr)
-      end
-
-      private
-      attr_accessor :context
-    end
-
+    require_relative 'processor/expression_parser'
+    require_relative 'processor/context_evaluator'
 
     def parse_expression(context, expr)
       ExpressionParser.new(context).parse(expr)

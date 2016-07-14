@@ -17,12 +17,14 @@ module Thymeleaf
           unless: UnlessProcessor,
           each: EachProcessor,
           text: TextProcessor,
+          utext: UTextProcessor,
           default: DefaultProcessor
       }
     end
 
     require_relative 'processors/default'
     require_relative 'processors/text'
+    require_relative 'processors/utext'
     require_relative 'processors/if'
     require_relative 'processors/unless'
     require_relative 'processors/each'

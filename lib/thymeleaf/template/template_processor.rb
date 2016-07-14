@@ -7,8 +7,7 @@ module Thymeleaf
       parsed_template
     end
 
-    private
-
+  private
     def process_node(context_holder, node)
       process_attributes(context_holder, node)
       node.children.each {|child| process_node(context_holder, child)}
@@ -22,7 +21,9 @@ module Thymeleaf
 
     def process_attribute(context_holder, node, attribute_key, attribute)
       # TODO: Find all proccessors. Apply in precedence order!
-      key, processor = * Thymeleaf.configuration.dialects.find_processor(attribute_key)
+      dialects = Thymeleaf.configuration.dialects
+
+      key, processor = * dialects.find_processor(attribute_key)
       processor.call(key: key, node: node, attribute: attribute, context: context_holder)
     end
   end

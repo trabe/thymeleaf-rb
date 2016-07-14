@@ -1,9 +1,11 @@
 
+require_relative 'context_struct'
+
 class ContextHolder < Struct.new(:context, :parent_context)
 
   def initialize(context, parent_context = nil)
     if context.is_a? Hash
-      super(OpenStruct.new(context), parent_context)
+      super(ContextStruct.new(context), parent_context)
     else
       super(context, parent_context)
     end
