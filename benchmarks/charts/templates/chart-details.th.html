@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Benchmark | Charts</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
+
+    <script type="text/javascript">
+        var dataSets = [];
+    </script>
+</head>
+<body>
+
+<div style="background: #eee" id="page_top">
+    <header class="container text-center">
+        <h1>Benchmark <span class="text-muted">| Charts</span></h1>
+        <p class="text-muted">An easy way to view <b>Thymeleaf-rb</b> performance evolution between iterations.</p>
+    </header>
+</div>
+
+
+<section class="container">
+    
+    <div class="btn-group pull-right" style="margin-top: 25px">
+        <a href="/" class="btn btn-default btn-large glyphicon glyphicon-menu-left"></a>
+        <a href="#" onclick="window.location.reload()" class="btn btn-default btn-large glyphicon glyphicon-repeat"></a>
+    </div>
+    
+    <h2 id="current-test">Current test comparison</h2>
+    <p class="text-muted description">The current test history. Shows <b>IPS comparison</b> (more is better). Reload to get an updated chart with different colors.</p>
+
+    <div class="chart">
+        <canvas class="embed-responsive-item" id="chart"></canvas>
+    </div>
+    
+    <!-- Chart Labels -->
+    <script type="text/javascript" data-th-text="var chartLabels = ${chart.x_axis_to_json}">
+        var chartLabels = ["First iter.", "Second iter.", "Third iter.", "Fourth iter.", "Fifth iter.", "...", "N iter."]; 
+    </script>
+
+    <!-- Data Sets -->
+    <script type="text/javascript" data-th-each="history : ${chart.history_list}" data-th-text="dataSets.push (${history.to_json});">
+        var randomScalingFactor = function() {
+            return Math.round(Math.random() * 100);
+        };
+        
+        dataSets.push ({ label: "Thymeleaf-rb 1", data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]});
+        dataSets.push ({ label: "ERB 2", data: [randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30]});
+    </script>
+    
+    
+    <script type="text/javascript">
+
+        var randomColorFactor = function() {
+            return Math.round(Math.random() * 255);
+        };
+        var randomColor = function(opacity) {
+            return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+        };
+
+        var config = {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: dataSets
+            },
+            options: {
+                responsive: true,
+                title:{
+                    display:false
+                },
+                tooltips: {
+                    mode: 'label',
+                    callbacks: {}
+                },
+                hover: {
+                    mode: 'dataset'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            show: true,
+                            labelString: 'Builds'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            show: true,
+                            labelString: 'IPS'
+                        },
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 260
+                        }
+                    }]
+                }
+            }
+        };
+
+        $.each(config.data.datasets, function(i, dataset) {
+            dataset.borderColor = randomColor(0.4);
+            dataset.backgroundColor = randomColor(0.5);
+            dataset.pointBorderColor = randomColor(0.7);
+            dataset.pointBackgroundColor = randomColor(0.5);
+            dataset.pointBorderWidth = 1;
+        });
+
+        window.onload = function() {
+            var ctx = document.getElementById("chart").getContext("2d");
+            window.myLine = new Chart(ctx, config);
+        };
+    </script>
+    <hr />
+</section>
+
+<section class="container">
+    <h2>Single tests evolution</h2>
+    <p class="text-muted">Other tests</p>
+
+    <ul class="list-group">
+        <li data-th-each="chart : ${chart_list}" class="list-group-item text-left">
+            <a href="" data-th-href="/chart/${chart}" data-th-text="Bench: ${chart.gsub('_', ' ')}" class="btn-link btn-block text-left">1. test_templates_if_condition_th_test</a>
+        </li>
+        <li data-th-unless="true" class="list-group-item text-left">
+            <a href="" class="btn-link btn-block text-left">2. test_templates_if_condition_th_test</a>
+        </li>
+        <li data-th-unless="true" class="list-group-item text-left">
+            <a href="" class="btn-link btn-block text-left">3. test_templates_if_condition_th_test</a>
+        </li>
+    </ul>
+
+</section>
+
+<footer class="footer container-responsive">
+    <section class="footer-content container text-center">
+        <hr />
+        <div class="">
+            <strong>Thymeleaf-rb</strong>-
+            <a href="https://github.com/trabe/thymeleaf-rb">GitHub</a>
+            <a href="#page_top" class="pull-right btn btn-default btn-small glyphicon glyphicon-menu-up"></a>
+            <br /><br />
+        </div>
+    </section>
+</footer>
+
+
+</body>
+</html>
