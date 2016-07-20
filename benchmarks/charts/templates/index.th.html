@@ -10,7 +10,10 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
-    
+
+    <script type="text/javascript">
+        var dataSets = [];
+    </script>
 </head>
 <body>
 
@@ -23,17 +26,34 @@
     
 
     <section class="container">
+
+        <div class="btn-group pull-right" style="margin-top: 25px">
+            <a href="#" onclick="window.location.reload()" class="btn btn-default btn-large glyphicon glyphicon-repeat"></a>
+        </div>
+        
         <h2>Current benchmark comparison</h2>
-        <p class="text-muted description">The current status of all comparison tests.</p>
+        <p class="text-muted description">The current status of all comparison tests (last build). Shows <b>IPS comparison</b> (more is better). Reload to get an updated chart with different colors.</p>
 
         <div class="general-chart">
             <canvas class="embed-responsive-item" id="general-chart"></canvas>
         </div>
-        <script type="text/javascript">
 
+        <!-- Chart Labels -->
+        <script type="text/javascript" data-th-text="var chartLabels = ${general_chart.x_axis_to_json}">
+            var chartLabels = ["First iter.", "Second iter.", "Third iter.", "Fourth iter.", "Fifth iter.", "...", "N iter."];
+        </script>
+
+        <!-- Data Sets -->
+        <script type="text/javascript" data-th-each="history : ${general_chart.history_list}" data-th-text="dataSets.push (${history.to_json});">
             var randomScalingFactor = function() {
                 return Math.round(Math.random() * 100);
             };
+
+            dataSets.push ({ label: "Thymeleaf-rb 1", data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]});
+            dataSets.push ({ label: "ERB 2", data: [randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30]});
+        </script>
+        
+        <script type="text/javascript">
             var randomColorFactor = function() {
                 return Math.round(Math.random() * 255);
             };
@@ -42,18 +62,10 @@
             };
 
             var config = {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: ["First iter.", "Second iter.", "Third iter.", "Fourth iter.", "Fifth iter.", "...", "N iter."],
-                    datasets: [{
-                        label: "Thymeleaf-rb",
-                        data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
-                        fill: false,
-                        borderDash: [5, 5]
-                    }, {
-                        label: "ERB",
-                        data: [randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30, randomScalingFactor() + 30]
-                    }]
+                    labels: chartLabels,
+                    datasets: dataSets
                 },
                 options: {
                     responsive: true,

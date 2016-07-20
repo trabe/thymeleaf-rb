@@ -8,11 +8,9 @@ class IndexServlet < BaseServlet
   def do_GET(req, res)
     super
     
-    chart_example = ChartLoader.load_bench 'test_templates_if_conditional_th_test'
-    
     template = get_template "index"
     context = {
-        :general_chart => chart_example,
+        :general_chart => ChartLoader.load_general_bench,
         :chart_list    => ChartList.find
     }
     
