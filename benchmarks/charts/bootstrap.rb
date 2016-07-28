@@ -19,5 +19,6 @@ def server_start(config = {})
     trap(signal) { server.shutdown }
   end
 
+  puts "Starting server on http://localhost:#{config[:Port]}"
   server.start
 end

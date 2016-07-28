@@ -5,7 +5,7 @@
     <title>Benchmark | Charts</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylecheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/flatly/bootstrap.min.css" crossorigin="anonymous">
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -17,10 +17,10 @@
 </head>
 <body>
 
-<div style="background: #eee" id="page_top">
+<div style="background: -webkit-linear-gradient(45deg, #e37682 15%, #5f4d93 85%); color: #fff !important" id="page_top">
     <header class="container text-center">
-        <h1>Benchmark <span class="text-muted">| Charts</span></h1>
-        <p class="text-muted">An easy way to view <b>Thymeleaf-rb</b> performance evolution between iterations.</p>
+        <h1>Benchmark <span>| Charts</span></h1>
+        <p>An easy way to view <b>Thymeleaf-rb</b> performance evolution between iterations.</p>
     </header>
 </div>
 
@@ -32,7 +32,7 @@
         <a href="#" onclick="window.location.reload()" class="btn btn-default btn-large glyphicon glyphicon-repeat"></a>
     </div>
     
-    <h2 id="current-test">Current test comparison</h2>
+    <h2 id="current-test">Current test comparison: <i data-th-text="${chart_name}"></i></h2>
     <p class="text-muted description">The current test history. Shows <b>IPS comparison</b> (more is better). Reload to get an updated chart with different colors.</p>
 
     <div class="chart">
@@ -127,7 +127,7 @@
 
     <ul class="list-group">
         <li data-th-each="chart : ${chart_list}" class="list-group-item text-left">
-            <a href="" data-th-href="/chart/${chart}" data-th-text="Bench: ${chart.gsub('_', ' ')}" class="btn-link btn-block text-left">1. test_templates_if_condition_th_test</a>
+            <a href="" data-th-href="/chart/${chart}" data-th-text="Bench: ${chart.gsub('_th_test', '').gsub('_', ' ')}" class="btn-link btn-block text-left">1. test_templates_if_condition_th_test</a>
         </li>
         <li data-th-unless="true" class="list-group-item text-left">
             <a href="" class="btn-link btn-block text-left">2. test_templates_if_condition_th_test</a>
@@ -143,7 +143,7 @@
     <section class="footer-content container text-center">
         <hr />
         <div class="">
-            <strong>Thymeleaf-rb</strong>-
+            <strong>Thymeleaf-rb</strong> |
             <a href="https://github.com/trabe/thymeleaf-rb">GitHub</a>
             <a href="#page_top" class="pull-right btn btn-default btn-small glyphicon glyphicon-menu-up"></a>
             <br /><br />
