@@ -13,11 +13,14 @@ module Thymeleaf
     # Precedence based on order for the time being
     def processors
       {
+          each: EachProcessor,
           if: IfProcessor,
           unless: UnlessProcessor,
-          each: EachProcessor,
+          switch: SwitchProcessor,
+          case: CaseProcessor,
           text: TextProcessor,
           utext: UTextProcessor,
+          remove: RemoveProcessor,
           default: DefaultProcessor
       }
     end
@@ -27,7 +30,10 @@ module Thymeleaf
     require_relative 'processors/utext'
     require_relative 'processors/if'
     require_relative 'processors/unless'
+    require_relative 'processors/switch'
+    require_relative 'processors/case'
     require_relative 'processors/each'
+    require_relative 'processors/remove'
 
   end
 
