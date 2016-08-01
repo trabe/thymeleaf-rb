@@ -40,7 +40,7 @@ module Thymeleaf
       [processor_key, processor]
     end
 
-    private
+  private
 
     attr_accessor :registered_dialects, :registered_processors
 
