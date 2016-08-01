@@ -27,6 +27,7 @@ class ContextStruct < OpenStruct
   end
   
   def set_private(private_var, value)
+    value = ContextStruct.new(value) if value.is_a? Hash
     send(:"\##{private_var}=", value)
   end
   
@@ -41,6 +42,18 @@ class ContextStruct < OpenStruct
     rescue
       false
     end
+  end
+
+  def get_object_var
+    begin
+      get_private('context_obj')
+    rescue
+      nil
+    end
+  end
+
+  def set_object_var(var)
+    set_private('context_obj', var)
   end
 
   def to_h

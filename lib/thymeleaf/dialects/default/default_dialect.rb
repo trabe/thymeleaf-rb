@@ -13,6 +13,7 @@ module Thymeleaf
     # Precedence based on order for the time being
     def processors
       {
+          object: ObjectProcessor,
           each: EachProcessor,
           if: IfProcessor,
           unless: UnlessProcessor,
@@ -26,6 +27,7 @@ module Thymeleaf
     end
 
     require_relative 'processors/default'
+    require_relative 'processors/object'
     require_relative 'processors/text'
     require_relative 'processors/utext'
     require_relative 'processors/if'

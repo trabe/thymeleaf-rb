@@ -22,4 +22,5 @@ class ContextHolder < Struct.new(:context, :parent_context)
       parent_context.send(m, *args)
     end
   end
+  
 end
