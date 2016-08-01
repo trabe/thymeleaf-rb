@@ -12,7 +12,7 @@ class ContextHolder < Struct.new(:context, :parent_context)
   end
 
   def evaluate(expr)
-    instance_eval(expr)
+    instance_eval(expr.to_s)
   end
 
   def method_missing(m, *args)

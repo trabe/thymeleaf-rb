@@ -25,6 +25,23 @@ class ContextStruct < OpenStruct
       end
     end
   end
+  
+  def set_private(private_var, value)
+    send(:"\##{private_var}=", value)
+  end
+  
+  def get_private(private_var)
+    send(:"\##{private_var}")
+  end
+  
+  def has_private(private_var)
+    begin
+      get_private private_var
+      true
+    rescue
+      false
+    end
+  end
 
   def to_h
     @hash_table
