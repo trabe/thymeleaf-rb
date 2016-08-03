@@ -21,9 +21,9 @@
     </ul>
     <h1 data-th-text="My incredible shopping list #2">Another shopping list</h1>
     <div data-th-remove="tag" data-th-class="list list-tag">
-        <div>Eggs</div>
-        <div>Bread</div>
-        <div>A cool hat</div>
+        <div data-th-unless="${must_show}" data-th-text="Eggs">The first element</div>
+        <div data-th-utext="Bread"></div>
+        <div data-th-utext="A cool hat"></div>
         <div>Some unexpected item</div>
     </div>
     <h1 data-th-text="My incredible shopping list #3">Another shopping list</h1>

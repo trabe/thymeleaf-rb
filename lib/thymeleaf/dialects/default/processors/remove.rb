@@ -28,35 +28,38 @@ class RemoveProcessor
                  end
                end
     
-    send(method, node)
+    send(method, node, context)
   end
   
-  def remove_all(node)
+  def remove_all(node, _)
     node.children.each do |child|
       child.unlink
     end
     node.unlink
   end
   
-  def remove_body(node)
+  def remove_body(node, _)
     node.children.each do |child|
       child.unlink
     end
   end
   
-  def remove_tag(node)
+  def remove_tag(node, context)
     node.children.reverse.each do |child|
+      subprocessor = Thymeleaf::TemplateProcessor.new
+      subprocessor.send(:process_node, context, child)
+      
       node.add_next_sibling child
     end
     node.unlink
   end
   
-  def remove_allbutfirst(node)
+  def remove_allbutfirst(node, _)
     node.children.drop(1).each do |child|
       child.unlink
     end
   end
   
-  def remove_none(_)
+  def remove_none(_, _)
   end
 end
