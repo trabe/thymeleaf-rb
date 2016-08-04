@@ -6,6 +6,7 @@ module Thymeleaf
     def initialize
       self.registered_dialects = {}
       self.registered_processors = {}
+      self.registered_tag_processors = {}
     end
 
     def add_dialect(*args)
@@ -21,6 +22,7 @@ module Thymeleaf
 
       registered_dialects[key] = dialect
       registered_processors[key] = dialect_processors(dialect)
+      registered_tag_processors[key] = dialect_tag_processors(dialect)
     end
 
     def find_processor(key)
@@ -40,12 +42,33 @@ module Thymeleaf
       [processor_key, processor]
     end
 
+    def find_tag_processor(key)
+      match = dialect_tag_matchers.match(key)
+
+      # TODO: check performance null object vs null check
+      return [key, null_processor] if match.nil?
+
+      dialect_key, processor_key = *match[1..2]
+
+      dialect_processors = registered_tag_processors[dialect_key]
+      raise ArgumentError, "No dialect found for key #{key}" if dialect_processors.nil?
+
+      processor = dialect_processors[processor_key] || dialect_processors['default']
+      raise ArgumentError, "No processor found for key #{key}" if processor.nil?
+
+      [processor_key, processor]
+    end
+
   private
 
-    attr_accessor :registered_dialects, :registered_processors
+    attr_accessor :registered_dialects, :registered_processors, :registered_tag_processors
 
     def dialect_matchers
       /^data-(#{registered_dialects.keys.join("|")})-(.*)$/
+    end
+    
+    def dialect_tag_matchers
+      /^(#{registered_dialects.keys.join("|")})-(.*)$/
     end
 
     def null_processor
@@ -54,6 +77,13 @@ module Thymeleaf
 
     def dialect_processors(dialect)
       dialect.processors.reduce({}) do |processors, (processor_key, processor)|
+        processors[processor_key.to_s] = processor.new
+        processors
+      end
+    end
+
+    def dialect_tag_processors(dialect)
+      dialect.tag_processors.reduce({}) do |processors, (processor_key, processor)|
         processors[processor_key.to_s] = processor.new
         processors
       end

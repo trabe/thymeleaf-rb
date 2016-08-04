@@ -7,7 +7,22 @@ module Thymeleaf
 
   class Template < Struct.new(:template_markup, :context)
     def render
-      parsed_template = Parser.new(template_markup).call
+      template_markup_uri = Thymeleaf.configuration.template_uri(template_markup)
+      do_render template_markup_uri
+    end
+    
+    def render_file
+      template_markup_uri = Thymeleaf.configuration.template_uri(template_markup)
+      
+      File.open template_markup_uri do |template|
+        template.rewind
+        do_render template.read
+      end
+    end
+  
+  private
+    def do_render(template)
+      parsed_template = Parser.new(template).call
       context_holder = ContextHolder.new(context)
       TemplateProcessor.new.call(parsed_template, context_holder)
     end

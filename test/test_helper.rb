@@ -14,3 +14,8 @@ class TestThymeleaf < Minitest::Test
   require_relative 'assertions/syntax_error'
 
 end
+
+Thymeleaf.configure do |config|
+  config.template.prefix = "#{__dir__}/templates/"
+  config.template.suffix = '.th.html'
+end

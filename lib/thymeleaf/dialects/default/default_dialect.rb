@@ -9,16 +9,24 @@ module Thymeleaf
     def self.default_key
       'th'
     end
+    
+    def tag_processors
+      {
+          block: BlockProcessor
+      }
+    end
 
     # Precedence based on order for the time being
     def processors
       {
-          object: ObjectProcessor,
+          include: IncludeProcessor,
+          replace: ReplaceProcessor,
           each: EachProcessor,
           if: IfProcessor,
           unless: UnlessProcessor,
           switch: SwitchProcessor,
           case: CaseProcessor,
+          object: ObjectProcessor,
           text: TextProcessor,
           utext: UTextProcessor,
           remove: RemoveProcessor,
@@ -36,6 +44,9 @@ module Thymeleaf
     require_relative 'processors/case'
     require_relative 'processors/each'
     require_relative 'processors/remove'
+    require_relative 'processors/include'
+    require_relative 'processors/replace'
+    require_relative 'processors/block'
 
   end
 

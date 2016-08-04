@@ -9,7 +9,8 @@ module Thymeleaf
 
   private
     def process_node(context_holder, node)
-      children_context = process_attributes(context_holder, node)
+      attr_context = process_attributes(context_holder, node)
+      children_context = process_tag(attr_context, node)
       
       # TODO: Processing all nodes. Maybe filtering by only-thymeleaf nodes can give better performance?
       node.children.each {|child| process_node(children_context, child)}
@@ -30,6 +31,19 @@ module Thymeleaf
       
       subcontext = processor.call(key: key, node: node, attribute: attribute, context: context_holder)
       
+      if processor_has_subcontext?(processor)
+        subcontext
+      else
+        context_holder
+      end
+    end
+    
+    def process_tag(context_holder, node)
+      dialects = Thymeleaf.configuration.dialects
+      key, processor = * dialects.find_tag_processor(node.name)
+
+      subcontext = processor.call(key: key, node: node, context: context_holder)
+
       if processor_has_subcontext?(processor)
         subcontext
       else

@@ -1,0 +1,31 @@
+---
+{
+    'hide' => false,
+    'show' => true,
+    'subtemplate' => {
+        'title' => 'Included title',
+        'text'  => 'Included content!'
+    }
+}
+---
+<article>
+    <h1 data-th-if="${hide}">My title</h1>
+    <p data-th-if="${show}">A short description</p>
+    <div data-th-include="content">
+        <p> The included content in da house</p>
+    </div>
+</article>
+---
+<article>
+    
+    <p>A short description</p>
+    <div><div id="content-included">
+    <h2>Included title</h2>
+    <p>Included content!</p>
+</div></div>
+</article>
+---
+<article>
+    <% if hide %><h1>My title</h1><% end %>
+    <% if show %><p>A short description</p><% end %>
+</article>
