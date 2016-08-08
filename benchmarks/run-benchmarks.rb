@@ -9,6 +9,10 @@ require 'benchmark/ips'
 require 'awesome_print'
 require 'fileutils'
 
+Thymeleaf.configure do |config|
+  config.template.prefix = "#{__dir__}/templates/"
+  config.template.suffix = '.th.html'
+end
 
 ap "[PERF] -----------------------------"
 
