@@ -9,20 +9,56 @@
 }
 ---
 <article>
+    <header data-th-fragment="myfragment">This is my fragment</header>
+    <header id="another-fragment">This is another fragment</header>
     <h1 data-th-if="${hide}">My title</h1>
     <p data-th-if="${show}">A short description</p>
+    <!-- Including external file -->
     <div data-th-replace="content">
         <p> The included content in da house</p>
+    </div>
+    <!-- Own page fragment -->
+    <div data-th-replace="this::myfragment">
+        <p> The included content in da house</p>
+    </div>
+    <!-- Same as previous, short form -->
+    <div data-th-replace="::myfragment">
+        <p> The included content in da house</p>
+    </div>
+    <!-- Invalid replacement -->
+    <div data-th-replace="this">
+        <p>Must be empty</p>
+    </div>
+    <!-- Selecting a specific part of external page -->
+    <div data-th-replace="content::subcontent">
+        <p> The included subcontent</p>
+    </div>
+    <!-- DOM Replacement -->
+    <div data-th-replace="::#another-fragment">
+        <p> The included subcontent</p>
     </div>
 </article>
 ---
 <article>
+    <header>This is my fragment</header>
+    <header id="another-fragment">This is another fragment</header>
     
     <p>A short description</p>
+    <!-- Including external file -->
     <div id="content-included">
     <h2>Included title</h2>
     <p>Included content!</p>
 </div>
+    <!-- Own page fragment -->
+    <header>This is my fragment</header>
+    <!-- Same as previous, short form -->
+    <header>This is my fragment</header>
+    <!-- Invalid replacement -->
+    <div></div>
+    <!-- Selecting a specific part of external page -->
+    <p>Included content!</p>
+    <!-- DOM Replacement -->
+    <header id="another-fragment">This is another fragment</header>
 </article>
 ---
 <article>

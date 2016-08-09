@@ -37,8 +37,7 @@ class ContextStruct < OpenStruct
   
   def has_private(private_var)
     begin
-      get_private private_var
-      true
+      !(get_private private_var).nil?
     rescue
       false
     end

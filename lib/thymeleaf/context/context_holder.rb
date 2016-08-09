@@ -23,4 +23,12 @@ class ContextHolder < Struct.new(:context, :parent_context)
     end
   end
   
+  def root
+    if parent_context.nil?
+      context
+    else
+      parent_context.root_context
+    end
+  end
+  
 end

@@ -1,31 +1,34 @@
 
-class ReplaceProcessor
+require_relative 'insert'
+
+class ReplaceProcessor < InsertProcessor
 
   include Thymeleaf::Processor
 
   def call(node:nil, attribute:nil, context:nil, **_)
+
     attribute.unlink
 
-    subtemplate = parse_expression(context, attribute.value)
+    template, fragment = parse_fragment_expr(context, attribute.value)
 
-    get_template subtemplate do |template_file|
-      node_subcontent = Thymeleaf::Parser.new(template_file).call
+    node_subcontent = get_node_template(template, node, context)
 
-      node.children.each {|child| child.unlink }
+    node.children.each {|child| child.unlink }
 
+    if fragment.nil?
+      # Avoid infinite loop when template is "this" and fragment is nil
+      return nil if is_self_template? template
+    else
+      node_subcontent = get_fragment_node(fragment, context, node_subcontent)
+    end
+
+    unless node_subcontent.nil?
+      node_subcontent = node_subcontent.dup
       subprocessor = Thymeleaf::TemplateProcessor.new
       subprocessor.send(:process_node, context, node_subcontent)
-      
+
       node.replace node_subcontent
     end
   end
-
-  def get_template(template_name)
-    template_uri = Thymeleaf.configuration.template_uri(template_name)
-
-    File.open template_uri do |template_file|
-      template_file.rewind
-      yield template_file.read
-    end
-  end
+  
 end

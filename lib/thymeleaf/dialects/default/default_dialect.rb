@@ -19,18 +19,19 @@ module Thymeleaf
     # Precedence based on order for the time being
     def processors
       {
-          include: IncludeProcessor,
-          replace: ReplaceProcessor,
-          each: EachProcessor,
-          if: IfProcessor,
-          unless: UnlessProcessor,
-          switch: SwitchProcessor,
-          case: CaseProcessor,
-          object: ObjectProcessor,
-          text: TextProcessor,
-          utext: UTextProcessor,
-          remove: RemoveProcessor,
-          default: DefaultProcessor
+          insert:   InsertProcessor,
+          replace:  ReplaceProcessor,
+          fragment: FragmentProcessor,
+          each:     EachProcessor,
+          if:       IfProcessor,
+          unless:   UnlessProcessor,
+          switch:   SwitchProcessor,
+          case:     CaseProcessor,
+          object:   ObjectProcessor,
+          text:     TextProcessor,
+          utext:    UTextProcessor,
+          remove:   RemoveProcessor,
+          default:  DefaultProcessor
       }
     end
 
@@ -44,9 +45,10 @@ module Thymeleaf
     require_relative 'processors/case'
     require_relative 'processors/each'
     require_relative 'processors/remove'
-    require_relative 'processors/include'
+    require_relative 'processors/insert'
     require_relative 'processors/replace'
     require_relative 'processors/block'
+    require_relative 'processors/fragment'
 
   end
 
