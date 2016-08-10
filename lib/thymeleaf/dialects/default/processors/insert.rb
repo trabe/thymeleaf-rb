@@ -2,11 +2,13 @@
 class InsertProcessor
 
   include Thymeleaf::Processor
+  
+  require_relative '../parsers/fragment'
 
   def call(node:nil, attribute:nil, context:nil, **_)
     attribute.unlink
 
-    template, fragment = parse_fragment_expr(context, attribute.value)
+    template, fragment = FragmentExpression.parse(context, attribute.value)
     
     node_subcontent = get_node_template(template, node, context)
 
@@ -24,11 +26,6 @@ class InsertProcessor
     end
   end
 
-  def parse_fragment_expr(_, expr)
-    md = expr.match(/\s*(?:([^\n:]+)\s*)?(?:::([^\n]+))?\s*/)
-    raise ArgumentError, "Not a valid include expression" if md.nil?
-    md[1..2]
-  end
 
 private
   
@@ -36,20 +33,11 @@ private
     if is_self_template? template
       root_node node
     else
-      subtemplate = parse_expression(context, template)
+      subtemplate = EvalExpression.parse(context, template)
 
-      get_template subtemplate do |template_file|
+      load_template subtemplate do |template_file|
         Thymeleaf::Parser.new(template_file).call
       end
-    end
-  end
-
-  def get_template(template_name)
-    template_uri = Thymeleaf.configuration.template_uri(template_name)
-    
-    File.open template_uri do |template_file|
-      template_file.rewind
-      yield template_file.read
     end
   end
   
@@ -68,8 +56,8 @@ private
   def get_fragment_node(fragment_name, context, node)
     root_context = context.root
     
-    if root_context.has_private "fragment_var_#{fragment_name}"
-      root_context.get_private "fragment_var_#{fragment_name}" 
+    if root_context.has_private DefaultDialect::context_fragment_var(fragment_name)
+      root_context.get_private DefaultDialect::context_fragment_var(fragment_name)
     else
       node.at_css fragment_name
     end

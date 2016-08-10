@@ -9,7 +9,7 @@ class ReplaceProcessor < InsertProcessor
 
     attribute.unlink
 
-    template, fragment = parse_fragment_expr(context, attribute.value)
+    template, fragment = FragmentExpression.parse(context, attribute.value)
 
     node_subcontent = get_node_template(template, node, context)
 
@@ -24,8 +24,7 @@ class ReplaceProcessor < InsertProcessor
 
     unless node_subcontent.nil?
       node_subcontent = node_subcontent.dup
-      subprocessor = Thymeleaf::TemplateProcessor.new
-      subprocessor.send(:process_node, context, node_subcontent)
+      subprocess_node(context, node_subcontent)
 
       node.replace node_subcontent
     end

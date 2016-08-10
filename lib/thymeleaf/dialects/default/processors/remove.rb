@@ -3,22 +3,28 @@ require_relative '../../../utils/booleanize'
 class RemoveProcessor
 
   include Thymeleaf::Processor
+  
+  REMOVE_ALL           = 'all'
+  REMOVE_BODY          = 'body'
+  REMOVE_TAG           = 'tag'
+  REMOVE_ALL_BUT_FIRST = 'but-all-first'
+  REMOVE_NONE          = 'none'
 
   def call(node:nil, attribute:nil, context:nil, **_)
     attribute.unlink
     
-    expr = parse_expression(context, attribute.value)
+    expr = EvalExpression.parse(context, attribute.value)
     
     method = case expr
-               when 'all'
+               when REMOVE_ALL
                  :remove_all
-               when 'body'
+               when REMOVE_BODY
                  :remove_body
-               when 'tag'
+               when REMOVE_TAG
                  :remove_tag
-               when 'but-all-first'
+               when REMOVE_ALL_BUT_FIRST
                  :remove_allbutfirst
-               when 'none'
+               when REMOVE_NONE
                  :remove_none
                else
                  if booleanize expr
@@ -31,6 +37,7 @@ class RemoveProcessor
     send(method, node, context)
   end
   
+private
   def remove_all(node, _)
     node.children.each do |child|
       child.unlink
@@ -46,9 +53,7 @@ class RemoveProcessor
   
   def remove_tag(node, context)
     node.children.reverse.each do |child|
-      subprocessor = Thymeleaf::TemplateProcessor.new
-      subprocessor.send(:process_node, context, child)
-      
+      subprocess_node(context, child)
       node.add_next_sibling child
     end
     node.unlink

@@ -1,5 +1,5 @@
 
-require_relative 'dialects/dialects'
+require_relative 'dialects'
 require_relative 'dialects/default/default_dialect'
 require_relative 'template/template_resolver'
 

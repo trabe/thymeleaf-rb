@@ -6,7 +6,7 @@ class IfProcessor
 
   def call(node:nil, attribute:nil, context:nil, **_)
     attribute.unlink
-    unless booleanize parse_expression(context, attribute.value)
+    unless booleanize EvalExpression.parse(context, attribute.value)
       node.children.each {|child| child.unlink }
       node.unlink
     end

@@ -5,7 +5,7 @@ class CaseProcessor
   def call(node:nil, attribute:nil, context:nil, **_)
     attribute.unlink
     
-    var_cmp = parse_expression(context, attribute.value)
+    var_cmp = EvalExpression.parse(context, attribute.value)
 
     unless case_equals? context, var_cmp
       node.children.each { |child| child.unlink }

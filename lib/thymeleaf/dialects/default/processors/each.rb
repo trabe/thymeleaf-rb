@@ -1,16 +1,15 @@
 class EachProcessor
+  
   include Thymeleaf::Processor
+  require_relative '../parsers/each'
 
   def call(node:nil, attribute:nil, context:nil, **_)
-    variable, stat, enumerable = parse_each_expr(context, attribute.value)
+    variable, stat, enumerable = EachExpression.parse(context, attribute.value)
     
     elements = evaluate_in_context(context, enumerable)
     
     stat_var = init_stat_var(stat, elements)
-    
-    # TODO: Improve to avoid a subprocessor
-    # FIXME: Others processors can't access to subcontext
-    subproccesor = Thymeleaf::TemplateProcessor.new
+
 
     attribute.unlink
     
@@ -32,7 +31,7 @@ class EachProcessor
       
       subcontext = ContextHolder.new(subcontext_vars, context)
       new_node = node.dup
-      subproccesor.send(:process_node, subcontext, new_node)
+      subprocess_node(subcontext, new_node)
       node.add_previous_sibling(new_node)
     end
 
@@ -44,16 +43,6 @@ class EachProcessor
   
   def has_subcontext?
     true
-  end
-
-  # Matches:
-  # "item, stat : ${iterator}",
-  # "item : ${iterator}" or
-  # "${iterator}"
-  def parse_each_expr(_, expr)
-    md = expr.match(/\s*(?:([^\n,]+?)\s*(?:,\s*([^\n,]*?))?\s*:\s*)?\${(.+?)}/)
-    raise ArgumentError, "Not a valid each expression" if md.nil?
-    md[1..3]
   end
 
 private

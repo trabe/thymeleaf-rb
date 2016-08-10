@@ -4,10 +4,10 @@ class ObjectProcessor
 
   include Thymeleaf::Processor
 
-  def call(node:nil, attribute:nil, context:nil, **_)
+  def call(attribute:nil, context:nil, **_)
     attribute.unlink
 
-    obj_var = parse_expression_variable(context, attribute.value)
+    obj_var = EvalExpression.parse_single_expression(context, attribute.value)
     new_context = ContextHolder.new({}, context)
     new_context.set_object_var obj_var
 
