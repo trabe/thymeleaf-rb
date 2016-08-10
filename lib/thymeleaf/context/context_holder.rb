@@ -27,7 +27,7 @@ class ContextHolder < Struct.new(:context, :parent_context)
     if parent_context.nil?
       context
     else
-      parent_context.root_context
+      parent_context.root
     end
   end
   
