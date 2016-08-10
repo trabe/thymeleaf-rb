@@ -2,6 +2,8 @@
 require 'ostruct'
 
 class ContextStruct < OpenStruct
+  
+  OBJECT_VAR = 'context_obj'
 
   def initialize(hash=nil)
     @table = {}
@@ -45,14 +47,14 @@ class ContextStruct < OpenStruct
 
   def get_object_var
     begin
-      get_private('context_obj')
+      get_private(OBJECT_VAR)
     rescue
       nil
     end
   end
 
   def set_object_var(var)
-    set_private('context_obj', var)
+    set_private(OBJECT_VAR, var)
   end
 
   def to_h
