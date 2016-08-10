@@ -27,7 +27,7 @@ module Thymeleaf
     end
 
     def add_dialect(*args)
-      dialects.add_dialect *args
+      dialects.add_dialect(*args)
     end
     
     def template_uri(name)
