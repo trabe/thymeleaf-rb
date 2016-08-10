@@ -45,18 +45,6 @@ class ContextStruct < OpenStruct
     end
   end
 
-  def get_object_var
-    begin
-      get_private(OBJECT_VAR)
-    rescue
-      nil
-    end
-  end
-
-  def set_object_var(var)
-    set_private(OBJECT_VAR, var)
-  end
-
   def to_h
     @hash_table
   end

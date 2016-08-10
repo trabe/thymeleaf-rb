@@ -40,7 +40,7 @@ module Thymeleaf
     end
     
     def processor_has_subcontext?(processor)
-      processor.respond_to?(:has_subcontext?) && processor.has_subcontext? == true
+      processor.respond_to?(:has_subcontext?) && processor.has_subcontext?
     end
     
     def process_element(context_holder, node, attribute, key, processor)

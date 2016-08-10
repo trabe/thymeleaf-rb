@@ -9,7 +9,7 @@ class ObjectProcessor
 
     obj_var = EvalExpression.parse_single_expression(context, attribute.value)
     new_context = ContextHolder.new({}, context)
-    new_context.set_object_var obj_var
+    new_context.set_private(DefaultDialect::CONTEXT_OBJECT_VAR, obj_var)
 
     attribute.unlink
     new_context

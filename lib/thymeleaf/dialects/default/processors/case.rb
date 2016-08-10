@@ -15,7 +15,8 @@ class CaseProcessor
   end
   
   def case_equals?(context, var_comparation)
-    (context.has_private 'switch_var') && (context.get_private 'switch_var').eql?(var_comparation)
+    (context.has_private DefaultDialect::CONTEXT_SWITCH_VAR) &&
+        (context.get_private DefaultDialect::CONTEXT_SWITCH_VAR).eql?(var_comparation)
   end
   
   

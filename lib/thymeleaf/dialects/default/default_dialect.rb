@@ -8,6 +8,7 @@ class DefaultDialect < Dialect
   
   CONTEXT_SWITCH_VAR   = 'switch_var'
   CONTEXT_FRAGMENT_VAR = 'fragment_var'
+  CONTEXT_OBJECT_VAR   = 'context_obj'
 
   def self.default_key
     'th'
