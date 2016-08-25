@@ -10,7 +10,7 @@ require 'awesome_print'
 require 'fileutils'
 
 Thymeleaf.configure do |config|
-  config.template.prefix = "#{__dir__}/templates/"
+  config.template.prefix = "#{__dir__}/../test/templates/"
   config.template.suffix = '.th.html'
 end
 

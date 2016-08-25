@@ -2,8 +2,6 @@
 require 'ostruct'
 
 class ContextStruct < OpenStruct
-  
-  OBJECT_VAR = 'context_obj'
 
   def initialize(hash=nil)
     @table = {}
@@ -14,7 +12,7 @@ class ContextStruct < OpenStruct
 
         if v.is_a?(Array)
           other = Array.new
-          v.each do | entry |
+          v.each do |entry|
             other.push((entry.is_a?(Hash) ? self.class.new(entry) : entry))
           end
           v = other
