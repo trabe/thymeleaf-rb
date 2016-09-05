@@ -125,14 +125,14 @@
     <h2>Single tests evolution</h2>
     <p class="text-muted">Other tests</p>
 
-    <ul class="list-group">
+    <ul class="list-group" data-th-remove="all-but-first">
         <li data-th-each="chart : ${chart_list}" class="list-group-item text-left">
             <a href="" data-th-href="/chart/${chart}" data-th-text="Bench: ${chart.gsub('_th_test', '').gsub('_', ' ')}" class="btn-link btn-block text-left">1. test_templates_if_condition_th_test</a>
         </li>
-        <li data-th-unless="true" class="list-group-item text-left">
+        <li class="list-group-item text-left">
             <a href="" class="btn-link btn-block text-left">2. test_templates_if_condition_th_test</a>
         </li>
-        <li data-th-unless="true" class="list-group-item text-left">
+        <li class="list-group-item text-left">
             <a href="" class="btn-link btn-block text-left">3. test_templates_if_condition_th_test</a>
         </li>
     </ul>

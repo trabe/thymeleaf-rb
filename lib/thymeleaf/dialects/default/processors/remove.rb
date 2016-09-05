@@ -7,7 +7,7 @@ class RemoveProcessor
   REMOVE_ALL           = 'all'
   REMOVE_BODY          = 'body'
   REMOVE_TAG           = 'tag'
-  REMOVE_ALL_BUT_FIRST = 'but-all-first'
+  REMOVE_ALL_BUT_FIRST = 'all-but-first'
   REMOVE_NONE          = 'none'
 
   def call(node:nil, attribute:nil, context:nil, **_)
@@ -60,11 +60,26 @@ private
   end
   
   def remove_allbutfirst(node, _)
-    node.children.drop(1).each do |child|
+    skip_first(node.children) do |child|
       child.unlink
     end
   end
   
   def remove_none(_, _)
+  end
+  
+  def empty_node?(node)
+    node.to_s.strip.empty?
+  end
+  
+  def skip_first(node_set)
+    i = 0
+    node_set.each do |child|
+      if i > 0
+        yield child
+      else
+        i += 1 unless empty_node? child
+      end
+    end
   end
 end

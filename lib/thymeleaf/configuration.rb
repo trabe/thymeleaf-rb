@@ -2,6 +2,7 @@
 require_relative 'dialects'
 require_relative 'dialects/default/default_dialect'
 require_relative 'template/template_resolver'
+require_relative 'parser/parse_options'
 
 module Thymeleaf
 
@@ -18,16 +19,21 @@ module Thymeleaf
 
   class Configuration
 
-    attr_accessor :dialects, :template
+    attr_accessor :dialects, :template, :parser
 
     def initialize
       self.dialects = Dialects.new
       self.template = TemplateResolver.new
+      self.parser   = ParseOptions.new
       add_dialect DefaultDialect
     end
 
     def add_dialect(*args)
       dialects.add_dialect(*args)
+    end
+    
+    def clear_dialects
+      dialects.clear_dialects
     end
     
     def template_uri(name)

@@ -22,7 +22,7 @@ module Thymeleaf
     def do_render(template)
       parsed_template = Parser.new(template).call
       context_holder = ContextHolder.new(context)
-      TemplateEngine.new.call(parsed_template, context_holder)
+      TemplateEngine.new.call(parsed_template, context_holder).to_s
     end
     
     def template_file_open(template_file)

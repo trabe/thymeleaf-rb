@@ -4,9 +4,7 @@ module Thymeleaf
   class Dialects
 
     def initialize
-      self.registered_dialects        = {}
-      self.registered_attr_processors = {}
-      self.registered_tag_processors  = {}
+      clear_dialects
     end
 
     def add_dialect(*args)
@@ -17,6 +15,12 @@ module Thymeleaf
       registered_dialects[key] = dialect
       registered_attr_processors[key] = dialect_processors(dialect)
       registered_tag_processors[key] = dialect_tag_processors(dialect)
+    end
+    
+    def clear_dialects
+      self.registered_dialects        = {}
+      self.registered_attr_processors = {}
+      self.registered_tag_processors  = {}
     end
 
     def find_attr_processor(key)

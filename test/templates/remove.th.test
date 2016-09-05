@@ -27,7 +27,7 @@
         <div>Some unexpected item</div>
     </div>
     <h1 data-th-text="My incredible shopping list #3">Another shopping list</h1>
-    <ul data-th-remove="but-all-first" data-th-class="list list-but-all-first"><li>Eggs</li><li>Bread</li><li>A cool hat</li><li>Some unexpected item</li></ul>
+    <ul data-th-remove="all-but-first" data-th-class="list list-but-all-first"><li>Eggs</li><li>Bread</li><li>A cool hat</li><li>Some unexpected item</li></ul>
     <h1 data-th-text="My incredible shopping list #4">Another shopping list</h1>
     <ul data-th-remove="none" data-th-class="list list-none">
         <li>Eggs</li>
