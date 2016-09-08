@@ -6,8 +6,27 @@ Thymeleaf.rb is a Ruby adaptation of [Thymeleaf](http://www.thymeleaf.org), a na
 
 It allows to create natural templates (HTML that can be correctly displayed in browsers and also work as static prototypes) and render with a data set to provide them functionality.
 
-
 **This is a Work In Progress Project. This gem is not ready for production use**
+
+A Thymeleaf.rb template looks like:
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th data-th-text="${headers.name}">Name</th>
+      <th data-th-text="${headers.price}">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="prod : ${allProducts}">
+      <td data-th-text="${prod.name}">Oranges</td>
+      <td data-th-text="${prod.price}">0.99</td>
+    </tr>
+  </tbody>
+</table>
+```
+
 
 ## Installation
 
@@ -97,7 +116,7 @@ Context values can be any kind of data. Thymeleaf.rb converts the passed context
 
 **Default Dialect** is included by default in Thymeleaf.rb, and offers a set of processors and utilities to render templates.
 
-Default dialect's attributes have the `data-th-` preffix, so any attribute starting with it will be processed:
+Default dialect's attributes have the `data-th-` preffix (which is HTML5 friendly), so any attribute starting with it will be processed:
 
 ```html
 <h1 data-th-if="${true_var}" data-th-text="Welcome, user">Greetings</h1>
