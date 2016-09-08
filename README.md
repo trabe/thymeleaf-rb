@@ -19,7 +19,7 @@ A Thymeleaf.rb template looks like:
     </tr>
   </thead>
   <tbody>
-    <tr th:each="prod : ${allProducts}">
+    <tr data-th-each="prod : ${all_products}">
       <td data-th-text="${prod.name}">Oranges</td>
       <td data-th-text="${prod.price}">0.99</td>
     </tr>
@@ -294,11 +294,11 @@ The `data-th-remove` attribute allows to delete document nodes:
     <td data-th-text="${stat.current.name}">Onions</td>
     <td data-th-text="${stat.current.price}">2.41</td>
   </tr>
-  <tr class="odd" th:remove="all">
+  <tr class="odd" data-th-remove="all">
     <td>Blue Lettuce</td>
     <td>9.55</td>
   </tr>
-  <tr th:remove="all">
+  <tr data-th-remove="all">
     <td>Mild Cinnamon</td>
     <td>1.99</td>
   </tr>
@@ -310,7 +310,7 @@ The `data-th-remove` attribute allows to delete document nodes:
 - `all`: Remove both the containing tag and all its children.
 - `body`: Do not remove the containing tag, but remove all its children.
 - `tag`: Remove the containing tag, but do not remove its children.
-- `all-but-first`: Remove all children of the containing tag except the first one. It will let us save some `th:remove="all"` when prototyping.
+- `all-but-first`: Remove all children of the containing tag except the first one. It will let us save some `data-th-remove="all"` when prototyping.
 - `none`: Do nothing. This value is useful for dynamic evaluation.
 
 
