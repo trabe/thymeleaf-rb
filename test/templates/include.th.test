@@ -1,0 +1,67 @@
+---
+{
+    'hide' => false,
+    'show' => true,
+    'subtemplate' => {
+        'title' => 'Included title',
+        'text'  => 'Included content!'
+    }
+}
+---
+<article>
+    <header data-th-fragment="myfragment">This is my fragment</header>
+    <header id="another-fragment">This is another fragment</header>
+    <h1 data-th-if="${hide}">My title</h1>
+    <p data-th-if="${show}">A short description</p>
+    <!-- Including external file -->
+    <div data-th-insert="content">
+        <p> The included content in da house</p>
+    </div>
+    <!-- Own page fragment -->
+    <div data-th-insert="this::myfragment">
+        <p> The included content in da house</p>
+    </div>
+    <!-- Same as previous, short form -->
+    <div data-th-insert="::myfragment">
+        <p> The included content in da house</p>
+    </div>
+    <!-- Invalid "this" replacement -->
+    <div data-th-insert="this">
+        <p>Must be empty</p>
+    </div>
+    <!-- Selecting a specific part of external page -->
+    <div data-th-insert="content::subcontent">
+        <p> The included subcontent</p>
+    </div>
+    <!-- DOM Replacement -->
+    <div data-th-insert="::#another-fragment">
+        <p> The included subcontent</p>
+    </div>
+</article>
+---
+<article>
+    <header data-th-fragment="myfragment">This is my fragment</header>
+    <header id="another-fragment">This is another fragment</header>
+    
+    <p>A short description</p>
+    <!-- Including external file -->
+    <div><div id="content-included">
+    <h2>Included title</h2>
+    <p>Included content!</p>
+</div></div>
+    <!-- Own page fragment -->
+    <div><header>This is my fragment</header></div>
+    <!-- Same as previous, short form -->
+    <div><header>This is my fragment</header></div>
+    <!-- Invalid "this" replacement -->
+    <div></div>
+    <!-- Selecting a specific part of external page -->
+    <div><p>Included content!</p></div>
+    <!-- DOM Replacement -->
+    <div><header id="another-fragment">This is another fragment</header></div>
+</article>
+---
+<article>
+    <% if hide %><h1>My title</h1><% end %>
+    <% if show %><p>A short description</p><% end %>
+</article>

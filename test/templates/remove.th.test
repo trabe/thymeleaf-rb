@@ -1,0 +1,144 @@
+---
+{
+    'must_hide' => true,
+    'must_show' => false
+}
+---
+<article>
+    <h1 data-th-text="My incredible shopping list">My shopping list</h1>
+    <ul data-th-remove="all" data-th-class="list list-all">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1 data-th-text="My incredible shopping list #1">Another shopping list</h1>
+    <ul data-th-remove="body" data-th-class="list list-body">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1 data-th-text="My incredible shopping list #2">Another shopping list</h1>
+    <div data-th-remove="tag" data-th-class="list list-tag">
+        <div data-th-unless="${must_show}" data-th-text="Eggs">The first element</div>
+        <div data-th-utext="Bread"></div>
+        <div data-th-utext="A cool hat"></div>
+        <div>Some unexpected item</div>
+    </div>
+    <h1 data-th-text="My incredible shopping list #3">Another shopping list</h1>
+    <ul data-th-remove="all-but-first" data-th-class="list list-but-all-first"><li>Eggs</li><li>Bread</li><li>A cool hat</li><li>Some unexpected item</li></ul>
+    <h1 data-th-text="My incredible shopping list #4">Another shopping list</h1>
+    <ul data-th-remove="none" data-th-class="list list-none">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1 data-th-text="My incredible shopping list #5">Another shopping list</h1>
+    <ul data-th-remove="${must_hide}" data-th-class="list list-true">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1 data-th-text="My incredible shopping list #6">Another shopping list</h1>
+    <ul data-th-remove="${must_show}" data-th-class="list list-false">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+</article>
+---
+<article>
+    <h1>My incredible shopping list</h1>
+    
+    <h1>My incredible shopping list #1</h1>
+    <ul class="list list-body"></ul>
+    <h1 data-th-text="My incredible shopping list #2">Another shopping list</h1>
+    
+        <div>Eggs</div>
+        <div>Bread</div>
+        <div>A cool hat</div>
+        <div>Some unexpected item</div>
+    
+    <h1>My incredible shopping list #3</h1>
+    <ul class="list list-but-all-first"><li>Eggs</li></ul>
+    <h1>My incredible shopping list #4</h1>
+    <ul class="list list-none">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1>My incredible shopping list #5</h1>
+    
+    <h1>My incredible shopping list #6</h1>
+    <ul class="list list-false">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+</article>
+---
+<article>
+    <h1><%= "My incredible shopping list" %></h1>
+    <% if false %>
+    <ul class="list">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <% end %>
+    <h1><%= "My incredible shopping list #1" %></h1>
+    <ul class="list">
+        <% if false %>
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+        <% end %>
+    </ul>
+    <h1><%= "My incredible shopping list #2" %></h1>
+    <% if false %><ul class="list"><% end %>
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    <% if false %></ul><% end %>
+    <h1><%= "My incredible shopping list #3" %></h1>
+    <ul class="list">
+        <li>Eggs</li>
+        <% if false %>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+        <% end %>
+    </ul>
+    <h1><%= "My incredible shopping list #4" %></h1>
+    <ul class="list">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <h1><%= "My incredible shopping list #5" %></h1>
+    <% if false %>
+    <ul class="list">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+    <% end %>
+    <h1><%= "My incredible shopping list #6" %></h1>
+    <ul class="list">
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    </ul>
+</article>

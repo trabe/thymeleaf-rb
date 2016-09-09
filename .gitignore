@@ -1,0 +1,11 @@
+*.gem
+.ruby-version
+.bundle
+bin
+
+.idea/
+Gemfile.lock
+projectFilesBackup/
+
+# Ignore benchmark results
+benchmarks/results/

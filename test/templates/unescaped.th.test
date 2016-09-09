@@ -1,0 +1,20 @@
+---
+{
+'escaped' => 'Hello <b>bold</b> world',
+'unescaped' => 'Hello <b>bold</b> world'
+}
+---
+<article>
+    <h1 data-th-utext="${unescaped}">Unescaped text</h1>
+    <h1 data-th-text="${escaped}">Escaped text</h1>
+</article>
+---
+<article>
+    <h1>Hello <b>bold</b> world</h1>
+    <h1>Hello &lt;b&gt;bold&lt;/b&gt; world</h1>
+</article>
+---
+<article>
+    <h1><%= unescaped %></h1>
+    <h1><%= escaped %></h1>
+</article>

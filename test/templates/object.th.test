@@ -1,0 +1,33 @@
+---
+{
+    'user' => {
+        'name'    => 'John',
+        'surname' => 'Doe',
+        'age'     => 25
+    },
+    'myname' => 'John Doe'
+}
+---
+<article data-th-object="${user}">
+    <h1 data-th-text="*{name} *{surname}">Name Surname</h1>
+    <p data-th-text="Age: *{age}" class="text-muted"></p>
+</article>
+<article>
+    <p data-th-text="Another name: *{myname}" class="text-muted">Another name</p>
+</article>
+---
+<article>
+    <h1>John Doe</h1>
+    <p class="text-muted">Age: 25</p>
+</article>
+<article>
+    <p class="text-muted">Another name: John Doe</p>
+</article>
+---
+<article>
+    <h1><%= "#{user.name} #{user.surname}" %></h1>
+    <p class="text-muted"><%= "Age: #{user.age}" %></p>
+</article>
+<article>
+    <p class="text-muted"><%= "Another name: #{myname}" %></p>
+</article>

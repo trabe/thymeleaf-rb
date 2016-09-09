@@ -1,0 +1,94 @@
+---
+{
+    :a => 'class_name1',
+    'b' => 'class_name2',
+    'truthy' => true,
+    'title' => 'The page title oh my god!',
+    'products' => [
+        {
+            'name' => "p1",
+            'price' => 0.5,
+            'categories' => ['cat1', 'cat2']
+        },
+        {
+            'name' => "p2",
+            'price' => 0.6,
+            'categories': []
+        }
+    ],
+    'alphabet' => ["a", "b", "c", "d", "e"]
+}
+---
+<table>
+    <tr data-th-each="product, stat : ${products}">
+        <td data-th-text="index: ${stat.index}"></td>
+        <td data-th-text="count: ${stat.count}"></td>
+        <td data-th-if="${stat.odd}">Odd</td>
+        <td data-th-if="${stat.even}">Even</td>
+        <td data-th-if="${stat.first}">First</td>
+        <td data-th-if="${stat.last}">Last</td>
+        <td data-th-text="${product.name}" data-th-class="fair ${a.upcase} expr ${b}" class="label">Oranges</td>
+        <td data-th-text="${product.price}" data-th-class="value">0.99</td>
+        <td><span data-th-each="category : ${product.categories}" data-th-text="${category}">category</span></td>
+    </tr>
+</table>
+<div class="alphabet">
+    <span data-th-each="letter : ${alphabet}" data-th-text="${letter}"></span>
+</div>
+<div class="sameletter">
+    <span data-th-each="${alphabet}">A</span>
+</div>
+<div class="limitletters">
+    <span data-th-each="_, stat : ${alphabet}"><span data-th-if="${stat.first || stat.last}" data-th-text="${stat.current}"></span></span>
+</div>
+---
+<table>
+    <tr>
+        <td>index: 0</td>
+        <td>count: 1</td>
+        <td>Odd</td>
+        
+        <td>First</td>
+        
+        <td class="label fair CLASS_NAME1 expr class_name2">p1</td>
+        <td class="value">0.5</td>
+        <td><span>cat1</span><span>cat2</span></td>
+    </tr>
+<tr>
+        <td>index: 1</td>
+        <td>count: 2</td>
+        
+        <td>Even</td>
+        
+        <td>Last</td>
+        <td class="label fair CLASS_NAME1 expr class_name2">p2</td>
+        <td class="value">0.6</td>
+        <td></td>
+    </tr>
+</table>
+<div class="alphabet">
+    <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span>
+</div>
+<div class="sameletter">
+    <span>A</span><span>A</span><span>A</span><span>A</span><span>A</span>
+</div>
+<div class="limitletters">
+    <span><span>a</span></span><span></span><span></span><span></span><span><span>e</span></span>
+</div>
+---
+<table>
+    <% products.each_with_index do |product, index| %>
+    <tr>
+        <td><% index + 1 %></td>
+        <td class="label fair <%= a.upcase %> expr <%= b %>"><%= product.name %></td>
+        <td class="<%= 'value' %>"><%= product.price %></td>
+        <td><% product.categories.each do |category| %><span><%= category %></span> <% end %></td>
+    </tr>
+    <% end %>
+</table>
+<div class="alphabet">
+    <% alphabet.each do |letter| %><span><%= letter %></span><% end %>
+</div>
+<div class="sameletter">
+    <% alphabet.each do %><span>A</span><% end %>
+</div> 

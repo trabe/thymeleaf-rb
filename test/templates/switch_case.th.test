@@ -1,0 +1,30 @@
+---
+{
+    'user_rol' => 'admin'
+}
+---
+<article>
+    <div data-th-switch="${user_rol}">
+        <p data-th-case="admin" data-th-text="Dear admin">Welcome, admin</p>
+        <p data-th-case="user" data-th-text="Dear user">Welcome, user</p>
+    </div>
+    <p>A short description</p>
+</article>
+---
+<article>
+    <div>
+        <p>Dear admin</p>
+        
+    </div>
+    <p>A short description</p>
+</article>
+---
+<article>
+    <div>
+        <% case user_rol
+        when 'admin' %><p><%= 'Dear admin' %>></p><
+        <% when 'user' %><p><%= 'Dear user' %></p><
+        <% end %>
+    </div>
+    <p>A short description</p>
+</article>

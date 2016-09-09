@@ -1,0 +1,35 @@
+---
+{
+'must_hide' => true,
+'must_show' => false
+}
+---
+<article>
+    <h1 data-th-text="My incredible shopping list">Another shopping list</h1>
+    <th-block data-th-class="list list-tag">
+        <div data-th-unless="${must_show}" data-th-text="Eggs">The first element</div>
+        <div data-th-utext="Bread"></div>
+        <div data-th-utext="A cool hat"></div>
+        <div>Some unexpected item</div>
+    </th-block>
+</article>
+---
+<article>
+    <h1>My incredible shopping list</h1>
+    
+        <div>Eggs</div>
+        <div>Bread</div>
+        <div>A cool hat</div>
+        <div>Some unexpected item</div>
+    
+</article>
+---
+<article>
+    <h1><%= "My incredible shopping list" %></h1>
+    <% if false %><ul class="list"><% end %>
+        <li>Eggs</li>
+        <li>Bread</li>
+        <li>A cool hat</li>
+        <li>Some unexpected item</li>
+    <% if false %></ul><% end %>
+</article>

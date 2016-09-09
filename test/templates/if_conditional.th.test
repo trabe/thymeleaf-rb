@@ -1,0 +1,20 @@
+---
+{
+'hide' => false,
+'show' => true
+}
+---
+<article>
+    <h1 data-th-if="${hide}">My title</h1>
+    <p data-th-if="${show}">A short description</p>
+</article>
+---
+<article>
+    
+    <p>A short description</p>
+</article>
+---
+<article>
+    <% if hide %><h1>My title</h1><% end %>
+    <% if show %><p>A short description</p><% end %>
+</article>
