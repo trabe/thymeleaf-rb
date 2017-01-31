@@ -50,7 +50,7 @@
         
         <td>First</td>
         
-        <td class="label fair CLASS_NAME1 expr class_name2">p1</td>
+        <td class="fair CLASS_NAME1 expr class_name2">p1</td>
         <td class="value">0.5</td>
         <td><span>cat1</span><span>cat2</span></td>
     </tr>
@@ -61,7 +61,7 @@
         <td>Even</td>
         
         <td>Last</td>
-        <td class="label fair CLASS_NAME1 expr class_name2">p2</td>
+        <td class="fair CLASS_NAME1 expr class_name2">p2</td>
         <td class="value">0.6</td>
         <td></td>
     </tr>

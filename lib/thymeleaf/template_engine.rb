@@ -18,8 +18,10 @@ module Thymeleaf
 
     def process_attributes(context_holder, node)
       attr_context = context_holder
-      node.attributes.each do |attribute_key, attribute|
-        attr_context = process_attribute(attr_context, node, attribute_key, attribute)
+      if(node.respond_to?(:attributes))
+        node.attributes.each do |attribute_key, attribute|
+          attr_context = process_attribute(attr_context, node, attribute_key, attribute)
+        end
       end
       attr_context
     end

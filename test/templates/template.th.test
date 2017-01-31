@@ -57,12 +57,12 @@
 
 <table>
     <tr>
-        <td class="label fair CLASS_NAME1 expr class_name2">p1</td>
+        <td class="fair CLASS_NAME1 expr class_name2">p1</td>
         <td class="value">0.5</td>
         <td><span>cat1</span><span>cat2</span></td>
     </tr>
 <tr>
-        <td class="label fair CLASS_NAME1 expr class_name2">p2</td>
+        <td class="fair CLASS_NAME1 expr class_name2">p2</td>
         <td class="value">0.6</td>
         <td></td>
     </tr>
@@ -87,7 +87,7 @@
 <table>
 <% products.each do |product| %>
     <tr>
-      <td class="label fair <%= a.upcase %> expr <%= b %>"><%= product.name %></td>
+      <td class="fair <%= a.upcase %> expr <%= b %>"><%= product.name %></td>
       <td class="<%= 'value' %>"><%= product.price %></td>
       <td><% product.categories.each do |category| %><span><%= category %></span> <% end %></td>
     </tr>
