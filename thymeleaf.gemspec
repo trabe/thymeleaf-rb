@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name                  = 'thymeleaf'
   spec.version               = Thymeleaf::VERSION
   spec.platform              = Gem::Platform::RUBY
-  spec.required_ruby_version = '~> 2.3.0'
+  spec.required_ruby_version = '>= 2.3.0'
 
   spec.authors               = ['David Barral Precedo', 'Daniel Vazquez Brañas']
   spec.email                 = ['contact@trabesoluciones.com', 'david.barral@trabesoluciones.com']
